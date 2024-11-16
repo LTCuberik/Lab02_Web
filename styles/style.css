@@ -1,0 +1,40 @@
+body{
+    margin: 0 auto;
+    padding: 10px;
+    max-width: 1200px;
+}
+
+/* Header */
+.header{
+    display: flex;
+    flex: 1 1 auto;
+    border-radius: 5px;
+    background-color: rgba(165, 42, 42, 0.367);
+    padding: 10px;
+    color: rgb(74, 12, 12);
+    align-items: center;
+}
+
+.header h2{
+    margin: 0 auto;
+}
+
+.header h4{
+    margin: 0;
+}
+
+
+/* Nav */
+.nav{
+    background-color: rgba(34, 170, 255, 0.632);
+    margin: 10px auto;
+    padding: 10px;
+    display: flex;
+    border-radius: 5px ;
+
+}
+
+.nav.inputGroup{
+    float: right;
+    display: flex;
+}
