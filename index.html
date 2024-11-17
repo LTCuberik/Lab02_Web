@@ -108,7 +108,7 @@
         <!-- Movie Slider Container for Most Popular -->    
         <div id="popularMovieSlider" class="row m-5 justify-content-center">    
           <div     
-            class="col-4 slider-item text-center"                    
+            class="col-4 slider-item popular-item text-center"                    
             v-for="(movie, index) in popularMovies"         
             :key="index"          
             @mouseover="hoveredPopularMovie = index"          
@@ -116,7 +116,7 @@
             <div class="card h-100 justify-content-center">    
               <img :src="movie.image" alt="Movie Poster" class="rounded img-fluid" style="object-fit: cover;">            
               <!-- Movie Info on Hover -->
-              <div class="card-movie-body" v-if="hoveredPopularMovie === index">
+              <div class="card-movie-body card-popular-movie" v-if="hoveredPopularMovie === index">
                 <h5 class="card-title">{{ movie.title }} ({{ movie.releaseYear }})</h5>
                 <p><strong>Genre:</strong> {{ movie.genre }}</p>
                 <p><strong>Director:</strong> {{ movie.director }}</p>
@@ -136,10 +136,41 @@
       </div>
 
     </div>
+
     <!-- Top Rating -->
     <div class="Top-Rating-section">
       <h3>Top Rated</h3>
+      <div class="position-relative">
+        <!-- Movie Slider Container for Top Rated -->
+        <div id="topRatedMovieSlider" class="row m-5 justify-content-center">
+          <div
+            class="col-4 slider-item top-rated-item text-center"
+            v-for="(movie, index) in topRatedMovies"
+            :key="index"
+            @mouseover="hoveredTopRatedMovie = index"
+            @mouseleave="hoveredTopRatedMovie = null">
+          <div class="card h-100 justify-content-center">
+            <img :src="movie.image" alt="Movie Poster" class="rounded img-fluid" style="object-fit: cover;">
+            <!-- Movie Info on Hover -->
+            <div class="card-movie-body card-top-rated-movie" v-if="hoveredTopRatedMovie === index">
+              <h5 class="card-title">{{ movie.title }} ({{ movie.releaseYear }})</h5>
+              <p><strong>Genre:</strong> {{ movie.genre }}</p>
+              <p><strong>Director:</strong> {{ movie.director }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <button class="btn position-absolute top-50 start-0 translate-middle-y" @click="prevTopRatedMoviesSlide">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+
+      <button class="btn position-absolute top-50 end-0 translate-middle-y" @click="nextTopRatedMoviesSlide">
+        <i class="fas fa-chevron-right"></i>
+      </button>
     </div>
+  </div>
 
     <!-- Footer -->
     <div class="rounded footer">Copyright by Ⓒ LTCuberik</div>

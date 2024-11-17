@@ -94,7 +94,6 @@ body{
     margin: 0;
 }
 
-/* Hide detailed movie info by default */
 .card-movie-body {
     display: none;
     background: rgba(0, 0, 0, 0.7);
@@ -102,13 +101,30 @@ body{
     padding: 10px;
   }
   
-  /* Show movie info when hovering over the card */
   .card:hover .card-movie-body {
     display: block;
   }
-  
-  /* Add smooth transition effect */
+
+  .popular-item {
+    width: 30%;  /* Hoặc một kích thước cụ thể như 300px */
+    height: 444px;  /* Đặt chiều cao cố định */
+    overflow: hidden;
+    position: relative;
+        }
+.popular-item:hover{
+    height: auto;
+}
+  .card-img-top {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* Hình ảnh sẽ bao phủ toàn bộ container mà không bị méo */
+}
   .card-movie-body {
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s ease;
   }
-  
+  #movieSlider .col-4 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
