@@ -6,13 +6,9 @@ body{
 
 /* Header */
 .header{
-    display: flex;
-    flex: 1 1 auto;
-    border-radius: 5px;
-    background-color: rgba(165, 42, 42, 0.367);
+    background-color: rgba(165, 42, 42, 0.2);
     padding: 10px;
     color: rgb(74, 12, 12);
-    align-items: center;
 }
 
 .header h2{
@@ -23,18 +19,33 @@ body{
     margin: 0;
 }
 
+#darkModeSwitch{
+    margin: auto 10px;
+}
+.dark-mode {
+    background-color: #4a4949;
+    color: #ffffff;
+}
+
+.light-mode {
+    background-color: #ffffff;
+    color: #000000;
+}
+
 
 /* Nav */
 .nav{
-    background-color: rgba(34, 170, 255, 0.632);
+    background-color: rgba(34, 170, 255, 0.2);
     margin: 10px auto;
-    padding: 10px;
-    display: flex;
-    border-radius: 5px ;
-
+    padding: 10px 20px;
 }
-
-.nav.inputGroup{
-    float: right;
-    display: flex;
+.formControl{
+    margin: 0 20px;
+}
+/*Footer*/
+.footer{
+    background-color: rgba(165, 42, 42, 0.367);
+    padding: 10px;
+    text-align: center;
+    font-style: italic;
 }
