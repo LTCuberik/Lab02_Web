@@ -1,7 +1,9 @@
-const dbProvider = {
+export const dbProvider = {
     async fetchData(type, clss, pattern = {}) {
+        console.log(type,clss);
         const url = `http://matuan.online:2422/api/${clss}`;
         try {
+            console.log(url);
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -52,7 +54,7 @@ const dbProvider = {
         const startIndex = perPage * (page - 1);
         const endIndex = perPage * page;
         const paginatedItems = filteredItems.slice(startIndex, endIndex);
-
+        console.log(paginatedItems );
         return {
             search: searchQuery,
             perPage,
