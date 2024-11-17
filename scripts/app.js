@@ -28,10 +28,8 @@ const app = Vue.createApp({
             const htmlElement = document.documentElement;
             const theme = this.isDarkMode ? 'dark' : 'light';
 
-            // Update Bootstrap theme attribute
             htmlElement.setAttribute('data-bs-theme', theme);
 
-            // Apply custom CSS classes
             document.body.classList.toggle('dark-mode', this.isDarkMode);
             document.body.classList.toggle('light-mode', !this.isDarkMode);
         },
@@ -51,11 +49,15 @@ const app = Vue.createApp({
         this.applyTheme();
         try {
 
-            const data = await dbProvider.analysicData('search/movie/the?per_page=5&page=1');
-            console.log('Search Results:', data);
+            const data = await dbProvider.analysicData('get/movie/?per_page=5&page=1');
+            console.log('get Results:', data);
             this.getData = data.items.map(movie => ({
                 title: movie.title,
-                image: movie.image || 'https://via.placeholder.com/150', // Placeholder nếu không có ảnh
+                releaseYear: movie.year,
+                revenue: movie.boxOffice.cumulativeWorldwideGross,
+                director: movie.directorList, 
+                imdb: movie.ratings.imDb,
+                image: movie.image
             }));
             const getData = await dbProvider.analysicData('get/movie/?per_page=5&page=1');
             console.log('Get Results:', getData.items);

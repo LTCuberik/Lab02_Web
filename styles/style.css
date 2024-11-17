@@ -50,6 +50,7 @@ body{
     font-style: italic;
 }
 
+/**/
 .slider-item {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin: 0 auto;
@@ -66,7 +67,7 @@ body{
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 .card-title {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.3);
     color: #fff;
     padding: 5px;
     border-radius: 5px;

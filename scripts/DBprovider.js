@@ -3,7 +3,6 @@ export const dbProvider = {
         console.log(type,clss);
         const url = `http://matuan.online:2422/api/${clss}`;
         try {
-            console.log(url);
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -25,14 +24,34 @@ export const dbProvider = {
         }
     },
 
+    calculateRevenue(boxOffice) {
+        const parseAmount = (amount) => parseInt(amount.replace(/[\$,]/g, "")) || 0; // Loại bỏ ký tự $ và , để chuyển thành số
+        const gross = parseAmount(boxOffice.cumulativeWorldwideGross);
+        if (!gross) return 0;
+        return gross;
+      },
+
     async getAPIfilter(data, pattern) {
         const params = new URLSearchParams(pattern);
+        console.log(pattern);
         const perPage = parseInt(params.get('per_page') || 10);
+        console.log(perPage);
         const page = parseInt(params.get('page') || 1);
         const startIndex = perPage * (page - 1);
         const endIndex = perPage * page;
-        const paginatedItems = data.slice(startIndex, endIndex);
+        console.log(data);
+        data.forEach(item =>{
+            let revenue = 0;
+            if (item.boxOffice) {
+                revenue = this.calculateRevenue(item.boxOffice);
+            }
+            item.revenue = revenue;
+        })
 
+        data.sort((a, b) => b.revenue - a.revenue);
+        console.log(data);
+        const paginatedItems = data.slice(startIndex, endIndex);
+        console.log(data);
         return {
             perPage,
             page,

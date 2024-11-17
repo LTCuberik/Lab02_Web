@@ -69,11 +69,14 @@
             @mouseleave="hoveredMovie = null">
             <div class="card h-100 justify-content-center">
               <img :src="movie.image" alt="Movie Poster" class="card-img-top">
-              <div 
-                class="card-body"
-                :class="{ 'highlighted': hoveredMovie === index }">
-                <h5 v-if="hoveredMovie === index" class="card-title">{{ movie.title }}</h5>
-              </div>
+                <div class="card-movie-body position-absolute bottom-0 start-0 w-100 text-black p-2">
+                  <h5 class="card-title">
+                    {{ movie.title }} ({{ movie.releaseYear }})<br>
+                  </h5>
+                  <h6 class="card-title">
+                    ImDb: {{ movie.imdb }} - Revenue {{ movie.revenue }}
+                  </h6>
+                </div>
             </div>
           </div>
         </div>
@@ -91,23 +94,11 @@
     <!-- Most Popular -->
     <div class="movies-section">
       <h2>Most Popular</h2>
-      <div class="movie-list">
-        <div class="movie-item" v-for="movie in mostPopular" :key="movie.id">
-          <img :src="movie.poster" :alt="movie.title">
-          <h3>{{ movie.title }}</h3>
-        </div>
-      </div>
     </div>
 
     <!-- Top Rating -->
     <div class="movies-section">
       <h2>Top Rated</h2>
-      <div class="movie-list">
-        <div class="movie-item" v-for="movie in topRated" :key="movie.id">
-          <img :src="movie.poster" :alt="movie.title">
-          <h3>{{ movie.title }}</h3>
-        </div>
-      </div>
     </div>
 
     <!-- Footer -->
