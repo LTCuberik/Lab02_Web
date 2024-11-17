@@ -59,41 +59,52 @@
     <!-- Movies Info -->
     <div class="movies-section">
       <div class="position-relative">
-        <!--Movie Slider Container -->
+        <!-- Movie Slider Container -->
         <div id="movieSlider" class="row">
           <div 
             class="col-4 slider-item text-center" 
-            v-for="(movie, index) in visibleMovies" 
+            v-for="(movie, index) in revenueMovies" 
             :key="index"
             @mouseover="hoveredMovie = index"
             @mouseleave="hoveredMovie = null">
             <div class="card h-100 justify-content-center">
-              <img :src="movie.image" alt="Movie Poster" class="card-img-top">
-                <div class="card-movie-body position-absolute bottom-0 start-0 w-100 text-black p-2">
-                  <h5 class="card-title">
-                    {{ movie.title }} ({{ movie.releaseYear }})<br>
-                  </h5>
-                  <h6 class="card-title">
-                    ImDb: {{ movie.imdb }} - Revenue {{ movie.revenue }}
-                  </h6>
-                </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Navigation Buttons -->
-        <button class="btn btn-dark position-absolute top-50 start-0 translate-middle-y" @click="prevSlide">
-            <i class="fas fa-chevron-left"></i>
+              <img :src="movie.image" alt="Movie Poster" class="card-img-top  rounded">
+              <div class="card-movie-body position-absolute bottom-0 start-0 w-100 text-black p-2">
+                <h5 class="card-title">
+                  {{ movie.title }} ({{ movie.releaseYear }})<br>
+                </h5>
+                <h6 class="card-title">
+                  ImDb: {{ movie.imdb }} - Revenue: {{ movie.revenue }}
+                </h6>
+              </div>
+                      
+              <!-- Progress Bar -->                    
+              <div class="d-flex position-absolute bottom-0 start-0 w-100 justify-content-center align-items-center gap-2 my-3">               
+                <span                       
+                  v-for="index in totalSlides"                       
+                  :key="index"                       
+                  class="progress-bar-item"                      
+                  :class="{ active: index - 1 === currentRevenueMoviePage }">                    
+                </span>
+              </div>                  
+            </div>              
+          </div>          
+        </div>  
+          
+        <!-- Navigation Buttons -->          
+        <button class="btn position-absolute top-50 start-0 translate-middle-y" @click="prevRevMoviesSlide">            
+          <i class="fas fa-chevron-left"></i>
         </button>
-        <button class="btn btn-dark position-absolute top-50 end-0 translate-middle-y" @click="nextSlide">
-            <i class="fas fa-chevron-right"></i>
+        <button class="btn position-absolute top-50 end-0 translate-middle-y" @click="nextRevMoviesSlide">
+          <i class="fas fa-chevron-right"></i>
         </button>
       </div>
     </div>
+  
 
     <!-- Most Popular -->
-    <div class="movies-section">
-      <h2>Most Popular</h2>
+    <div class="Most-Popular-section">
+      <h3>Most Popular</h3>
     </div>
 
     <!-- Top Rating -->

@@ -42,6 +42,25 @@ body{
 .formControl{
     margin: 0 20px;
 }
+
+/**/
+.card-movie-body{
+    margin-bottom: 25px;
+}
+.progress-bar-item {
+    width: 55px; 
+    height: 2px; 
+    background-color: #e9ecef; 
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.progress-bar-item.active {
+    background-color: #0d6efd; 
+    transform: scale(1.2); 
+}
+
+
+
 /*Footer*/
 .footer{
     background-color: rgba(165, 42, 42, 0.367);

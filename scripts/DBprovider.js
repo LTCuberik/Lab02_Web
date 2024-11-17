@@ -1,5 +1,5 @@
 export const dbProvider = {
-    async fetchData(type, clss, pattern = {}) {
+    async getAPI(type, clss, pattern = {}) {
         console.log(type,clss);
         const url = `http://matuan.online:2422/api/${clss}`;
         try {
@@ -29,7 +29,7 @@ export const dbProvider = {
         const gross = parseAmount(boxOffice.cumulativeWorldwideGross);
         if (!gross) return 0;
         return gross;
-      },
+    },
 
     async getAPIfilter(data, pattern) {
         const params = new URLSearchParams(pattern);
@@ -92,7 +92,7 @@ export const dbProvider = {
         return movie;
     },
 
-    async analysicData(input) {
+    async fetchData(input) {
         const [type, cls, pattern] = input.split('/');
         if (!type || !cls || !pattern) {
             throw new Error('Invalid input format. The format should be <type>/<class>/pattern');
@@ -115,6 +115,6 @@ export const dbProvider = {
             default:
                 clss = 'Movies';
         }
-        return await this.fetchData(type, clss, pattern);
+        return await this.getAPI(type, clss, pattern);
     },
 };
