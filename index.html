@@ -92,24 +92,53 @@
         </div>  
           
         <!-- Navigation Buttons -->          
-        <button class="btn position-absolute top-50 start-0 translate-middle-y" @click="prevRevMoviesSlide">            
+        <button class="btn position-absolute top-50 start-0 mx-5 translate-middle-y" @click="prevRevMoviesSlide">            
           <i class="fas fa-chevron-left"></i>
         </button>
-        <button class="btn position-absolute top-50 end-0 translate-middle-y" @click="nextRevMoviesSlide">
+        <button class="btn position-absolute top-50 end-0 mx-5 translate-middle-y" @click="nextRevMoviesSlide">
           <i class="fas fa-chevron-right"></i>
         </button>
       </div>
     </div>
   
+    <!-- Most Popular Section -->
+    <div class="Most-Popular-section">  
+      <h3>Most Popular</h3>  
+      <div class="position-relative">    
+        <!-- Movie Slider Container for Most Popular -->    
+        <div id="popularMovieSlider" class="row m-5 justify-content-center">    
+          <div     
+            class="col-4 slider-item text-center"                    
+            v-for="(movie, index) in popularMovies"         
+            :key="index"          
+            @mouseover="hoveredPopularMovie = index"          
+            @mouseleave="hoveredPopularMovie = null">          
+            <div class="card h-100 justify-content-center">    
+              <img :src="movie.image" alt="Movie Poster" class="rounded img-fluid" style="object-fit: cover;">            
+              <!-- Movie Info on Hover -->
+              <div class="card-movie-body" v-if="hoveredPopularMovie === index">
+                <h5 class="card-title">{{ movie.title }} ({{ movie.releaseYear }})</h5>
+                <p><strong>Genre:</strong> {{ movie.genre }}</p>
+                <p><strong>Director:</strong> {{ movie.director }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <!-- Most Popular -->
-    <div class="Most-Popular-section">
-      <h3>Most Popular</h3>
+        <!-- Navigation Buttons -->
+        <button class="btn position-absolute top-50 start-0 translate-middle-y" @click="prevPopularMoviesSlide">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+    
+        <button class="btn position-absolute top-50 end-0 translate-middle-y" @click="nextPopularMoviesSlide">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+
     </div>
-
     <!-- Top Rating -->
-    <div class="movies-section">
-      <h2>Top Rated</h2>
+    <div class="Top-Rating-section">
+      <h3>Top Rated</h3>
     </div>
 
     <!-- Footer -->

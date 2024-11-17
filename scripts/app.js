@@ -7,6 +7,11 @@ const app = Vue.createApp({
             perRevenueMoviePage: 1, // Số lượng phim trên mỗi slide
             hoveredMovie: null, // Phim đang được hover
             revenueMovies: [],
+            //
+            currentPopularMoviePage: 1, // Slide hiện tại cho Most Popular
+            perPopularMoviePage: 3, // Số lượng phim trên mỗi slide cho Most Popular
+            hoveredPopularMovie: null, // Phim đang được hover cho Most Popular
+            popularMovies: [], // Dữ liệu phim Most Popular
         };
     },
     computed: {
@@ -45,6 +50,9 @@ const app = Vue.createApp({
                     revenue: movie.boxOffice.cumulativeWorldwideGross,
                     imdb: movie.ratings.imDb,
                     image: movie.image,
+                    producer: movie.producer || 'Unknown',  // Assuming the field exists in the API
+                    director: movie.director || 'Unknown',  // Assuming the field exists in the API
+                    actors: movie.actors || 'Unknown',      // Assuming the field exists in the API
                 }));
                 this.totalSlides = 5;
             } catch (error) {
@@ -64,11 +72,45 @@ const app = Vue.createApp({
                 await this.fetchRevenueMovies(this.currentRevenueMoviePage + 1);
             }
         },
+
+        // Fetch Most Popular Movies
+    
+        async fetchPopularMovies(page) {        
+            try {            
+                const data = await dbProvider.fetchData(`get/mostpopular/?per_page=${this.perPopularMoviePage}&page=${page}`);
+                this.popularMovies = data.items.map(movie => ({
+                    title: movie.title,
+                    releaseYear: movie.year,
+                    image: movie.image,
+                    genre: movie.genre || 'Unknown',  
+                    director: movie.director || 'Unknown',  // Assuming the field exists in the API
+                }));
+            } catch (error) {
+                console.error('Error fetching popular movies:', error);
+            }
+        },
+
+        // Previous Slide for Most Popular
+        async prevPopularMoviesSlide() {
+            if (this.currentPopularMoviePage > 0) {
+                this.currentPopularMoviePage--;
+                await this.fetchPopularMovies(this.currentPopularMoviePage + 1);
+            }
+        },
+
+        // Next Slide for Most Popular
+        async nextPopularMoviesSlide() {
+            if (this.currentPopularMoviePage < this.totalSlides - 1) {
+                this.currentPopularMoviePage++;
+                await this.fetchPopularMovies(this.currentPopularMoviePage + 1);
+            }
+        },
     },
     
     async mounted() {
         this.applyTheme();
-        await this.fetchRevenueMovies(this.currentRevenueMoviePage + 1);
+        await this.fetchRevenueMovies(this.currentRevenueMoviePage);
+        await this.fetchPopularMovies(this.currentPopularMoviePage);
     },
 });
 

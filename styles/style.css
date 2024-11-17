@@ -93,3 +93,22 @@ body{
     position: relative;
     margin: 0;
 }
+
+/* Hide detailed movie info by default */
+.card-movie-body {
+    display: none;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+  }
+  
+  /* Show movie info when hovering over the card */
+  .card:hover .card-movie-body {
+    display: block;
+  }
+  
+  /* Add smooth transition effect */
+  .card-movie-body {
+    transition: opacity 0.3s ease;
+  }
+  

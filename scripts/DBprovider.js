@@ -10,7 +10,7 @@ export const dbProvider = {
             const data = await response.json();
             switch (type) {
                 case 'get':
-                    return this.getAPIfilter(data, pattern);
+                    return this.getAPIfilter(data, pattern, clss);
                 case 'search':
                     return this.searchAPIfilter(data, pattern);
                 case 'detail':
@@ -31,25 +31,25 @@ export const dbProvider = {
         return gross;
     },
 
-    async getAPIfilter(data, pattern) {
+    async getAPIfilter(data, pattern, clss) {
         const params = new URLSearchParams(pattern);
         console.log(pattern);
         const perPage = parseInt(params.get('per_page') || 10);
-        console.log(perPage);
         const page = parseInt(params.get('page') || 1);
         const startIndex = perPage * (page - 1);
         const endIndex = perPage * page;
-        console.log(data);
-        data.forEach(item =>{
-            let revenue = 0;
-            if (item.boxOffice) {
-                revenue = this.calculateRevenue(item.boxOffice);
-            }
-            item.revenue = revenue;
-        })
-
-        data.sort((a, b) => b.revenue - a.revenue);
-        console.log(data);
+        console.log(clss);
+        if (clss == 'Movies'){
+            data.forEach(item =>{
+                let revenue = 0;
+                if (item.boxOffice) {
+                    revenue = this.calculateRevenue(item.boxOffice);
+                }
+                item.revenue = revenue;
+            })        
+            data.sort((a, b) => b.revenue - a.revenue);
+        }
+ 
         const paginatedItems = data.slice(startIndex, endIndex);
         console.log(data);
         return {
