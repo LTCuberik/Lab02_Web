@@ -1,16 +1,15 @@
+import { dbProvider } from './DBprovider.js';
 const app = Vue.createApp({
     data() {
         return {
             isDarkMode: localStorage.getItem('theme') === 'dark' || !localStorage.getItem('theme'), // Default to dark mode
-            movies: [],
-            errorMessage: ''
         };
     },
-    mounted() {
+    async mounted() {
+        this.applyTheme();
         try {
-            this.applyTheme();
-            const detailData = await dbprovider.analysicData('detail/movie/tt0012349');
-            console.log('Detail Results:', detailData);
+            const detailData = await dbProvider.analysicData('detail/movie/tt0012349');
+            this.movies = [detailData];
 
             const searchData = await dbProvider.analysicData('search/movie/the?per_page=5&page=1');
             console.log('Search Results:', searchData.items);
@@ -41,4 +40,4 @@ const app = Vue.createApp({
     }
 });
 
-app.mount('#movieApp');
+app.mount('#app');
