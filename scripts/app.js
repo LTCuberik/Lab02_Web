@@ -1,4 +1,7 @@
+import { createApp } from 'vue';  // Import Vue
+import { comNav } from './layouts.js';  // Import component comNav
 import { dbProvider } from './DBprovider.js';
+
 const app = Vue.createApp({
     data() {
         return {
@@ -17,6 +20,8 @@ const app = Vue.createApp({
             perTopRatedMoviePage: 3, // Số lượng phim trên mỗi slide cho Top Rated
             hoveredTopRatedMovie: null, // Phim đang được hover cho Top Rated
             topRatedMovies: [], // Dữ liệu phim Top Rated
+            //
+            selectedMovie: null, // Movie đang được chọn
         };
     },
     computed: {},
@@ -44,6 +49,14 @@ const app = Vue.createApp({
             return gross;
         },
 
+        showMovieDetails(movie) {
+            this.selectedMovie = movie;
+        },
+        
+        backToHome() {
+            this.selectedMovie = null;
+        },
+
         async fetchRevenueMovies(page) {
             try {
                 const data = await dbProvider.fetchData(`get/movie/?per_page=${this.perRevenueMoviePage}&page=${page}`);
@@ -65,15 +78,15 @@ const app = Vue.createApp({
         },
 
         async prevRevMoviesSlide() {
-            if (this.currentRevenueMoviePage > 0) {
+            if (this.currentRevenueMoviePage > 1) {
                 this.currentRevenueMoviePage--;
-                await this.fetchRevenueMovies(this.currentRevenueMoviePage + 1);
+                await this.fetchRevenueMovies(this.currentRevenueMoviePage);
             }
         },
         async nextRevMoviesSlide() {
-            if (this.currentRevenueMoviePage < this.totalSlides - 1) {
+            if (this.currentRevenueMoviePage < this.totalSlides) {
                 this.currentRevenueMoviePage++;
-                await this.fetchRevenueMovies(this.currentRevenueMoviePage + 1);
+                await this.fetchRevenueMovies(this.currentRevenueMoviePage);
             }
         },
 
@@ -95,17 +108,17 @@ const app = Vue.createApp({
 
         // Previous Slide for Most Popular
         async prevPopularMoviesSlide() {
-            if (this.currentPopularMoviePage > 0) {
+            if (this.currentPopularMoviePage > 1) {
                 this.currentPopularMoviePage--;
-                await this.fetchPopularMovies(this.currentPopularMoviePage + 1);
+                await this.fetchPopularMovies(this.currentPopularMoviePage);
             }
         },
 
         // Next Slide for Most Popular
         async nextPopularMoviesSlide() {
-            if (this.currentPopularMoviePage < this.totalSlides - 1) {
+            if (this.currentPopularMoviePage < this.totalSlides) {
                 this.currentPopularMoviePage++;
-                await this.fetchPopularMovies(this.currentPopularMoviePage + 1);
+                await this.fetchPopularMovies(this.currentPopularMoviePage);
             }
         },
 
@@ -129,18 +142,22 @@ const app = Vue.createApp({
         async prevTopRatedMoviesSlide() {
             if (this.currentTopRatedMoviePage > 0) {
                 this.currentTopRatedMoviePage--;
-                await this.fetchTopRatedMovies(this.currentTopRatedMoviePage + 1);
+                await this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
             }
         },
 
         // Next Slide for Top Rated
         async nextTopRatedMoviesSlide() {
-            if (this.currentTopRatedMoviePage < this.totalSlides - 1) {
+            if (this.currentTopRatedMoviePage < this.totalSlides) {
                 this.currentTopRatedMoviePage++;
-                await this.fetchTopRatedMovies(this.currentTopRatedMoviePage + 1);
+                await this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
             }
         },
     },
+    components:{
+        comNav
+    },
+
 
     async mounted() {
         this.applyTheme();
