@@ -16,25 +16,20 @@
 
     <!--VueJS-->
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
-    <script type="importmap">
-      {
-        "imports":{
-          "vue": "https://unpkg.com/vue@3.5.13/dist/vue.esm-browser.prod.js"
-        }
-      }
-    </script>
 
     <!--Fontawesome-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="styles/style.css">
-    <script type="module" src="./scripts/app.js"></script>
+    <script type="module" defer src="./scripts/app.js"></script>
     <script type="module" src="./scripts/DBprovider.js"></script>
     <script type="module" src="./scripts/layouts.js"></script>
   
 </head>
 <body>
+  
   <div id="app">
+    
     <!-- Header -->
     <div class="d-flex align-items-center rounded header">
       <h4>20120319</h4>
@@ -63,10 +58,18 @@
           id="inputSearch" 
           placeholder="Search..."
           v-model="searchText" />
-        <span class="inputGroupSearchIcon" id="searchIcon" @click="handleSearchInput">Search</span>
+        <button class="rounded inputGroupSearchIcon" id="searchIcon" @click="handleSearchInput">Search</button>
       </div>
     </nav>
 
+    <!-- Loading Spinner -->
+    <div v-if="isLoading" class="loading-spinner">
+      <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!--Home-->
     <div v-if="!isSearchPage && !selectedMovie" class="home-content">
         <!-- Movies Info -->
       <div class="movies-section">
@@ -77,8 +80,8 @@
               class="col-4 slider-item text-center" 
               v-for="(movie, index) in revenueMovies" 
               :key="index"
-              @mouseover="hoveredMovie = index"
-              @mouseleave="hoveredMovie = null"
+              @mouseover="hovered = index"
+              @mouseleave="hovered = null"
               @click="showMovieDetails(movie.id)">
               <div class="card h-100 justify-content-center">
                 <img :src="movie.image || 'https://via.placeholder.com/150'" alt="Movie Poster" class="card-img-top  rounded">
@@ -116,80 +119,25 @@
         </button>
       </div>
     </div>
-  
-    <!-- Most Popular Section -->
-    <div class="Most-Popular-section">  
-      <h3>Most Popular</h3>  
-      <div class="position-relative">    
-        <!-- Movie Slider Container for Most Popular -->    
-        <div id="popularMovieSlider" class="row m-5 justify-content-center">    
-          <div     
-            class="col-4 slider-item popular-item text-center"                    
-            v-for="(movie, index) in popularMovies"         
-            :key="index"          
-            @mouseover="hoveredPopularMovie = index"          
-            @mouseleave="hoveredPopularMovie = null"
-            @click="showMovieDetails(movie.id)">          
-            <div class="card h-100 justify-content-center">    
-              <img :src="movie.image" alt="Movie Poster" class="rounded img-fluid" style="object-fit: cover;">            
-              <!-- Movie Info on Hover -->
-              <div class="card-movie-body card-popular-movie" v-if="hoveredPopularMovie === index">
-                <h5 class="card-title">{{ movie.fullTitle }}</h5>
-                <p><strong>ImDb:</strong> {{ movie.imDbRating }} - <strong>Count:</strong> {{ movie.imDbRatingCount }} </p>
-                <p><strong>Rank:</strong> {{ movie.rank}} - <strong>Crew:</strong> {{ movie.crew}}</p>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Navigation Buttons -->
-        <button class="btn position-absolute top-50 start-0 translate-middle-y" @click="prevPopularMoviesSlide">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-    
-        <button class="btn position-absolute top-50 end-0 translate-middle-y" @click="nextPopularMoviesSlide">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-      </div>
+    <!-- Slider cho Top Rated -->
+    <movieslider
+      title="Most Popular"
+      sliderId="popularMovieSlider"
+      :movies="popularMovies"
+      @movieselected="showMovieDetails"
+      @prevslide="prevPopularMoviesSlide"
+      @nextslide="nextPopularMoviesSlide"></movieslider>
 
+    <!-- Slider cho Top Rated -->
+    <movieslider
+      title="Top Rated"
+      sliderId="topRatedMovieSlider"
+      :movies="topRatedMovies"
+      @movieselected="showMovieDetails"
+      @prevslide="prevTopRatedMoviesSlide"
+      @nextslide="nextTopRatedMoviesSlide"></movieslider>
     </div>
-
-    <!-- Top Rating -->
-    <div class="Top-Rating-section">
-      <h3>Top Rated</h3>
-      <div class="position-relative">
-        <!-- Movie Slider Container for Top Rated -->
-        <div id="topRatedMovieSlider" class="row m-5 justify-content-center">
-          <div
-            class="col-4 slider-item top-rated-item text-center"
-            v-for="(movie, index) in topRatedMovies"
-            :key="index"
-            @mouseover="hoveredTopRatedMovie = index"
-            @mouseleave="hoveredTopRatedMovie = null"
-            @click="showMovieDetails(movie.id)">
-            <div class="card h-100 justify-content-center">
-              <img :src="movie.image" alt="Movie Poster" class="rounded img-fluid" style="object-fit: cover;">
-              <!-- Movie Info on Hover -->
-              <div class="card-movie-body card-top-rated-movie" v-if="hoveredTopRatedMovie === index">
-                <h5 class="card-title">{{ movie.fullTitle }}</h5>
-                <p><strong>ImDb:</strong> {{ movie.imDbRating }} - <strong>Count:</strong> {{ movie.imDbRatingCount }} </p>
-                <p><strong>Rank:</strong> {{ movie.rank}} - <strong>Crew:</strong> {{ movie.crew}}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Navigation Buttons -->
-        <button class="btn position-absolute top-50 start-0 translate-middle-y" @click="prevTopRatedMoviesSlide">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-
-        <button class="btn position-absolute top-50 end-0 translate-middle-y" @click="nextTopRatedMoviesSlide">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-      </div>
-    </div>
-  </div>
     
     <!-- Movie Details -->
     <div v-if="selectedMovie" class="movie-details">
@@ -206,23 +154,22 @@
         <div class="position-relative row">
           <div 
             class="col-4 slider-item text-center m-3 popular-item" 
-            v-for="(movie, index) in selectedMovie.actorList" 
+            v-for="(actor, index) in selectedMovie.actorList" 
             :key="index"
-            @mouseover="hoveredMovie = index"
-            @mouseleave="hoveredMovie = null"
-            @click="showActorDetails(movie.id)">
+            @mouseover="hovered = index"
+            @mouseleave="hovered = null"
+            @click="showActorDetails(actor)">
             <div class="card h-100 justify-content-center">
-              <img :src="movie.image || 'https://via.placeholder.com/150'" alt="Movie Poster" class="card-img-top  rounded">
+              <img :src="actor.image || 'https://via.placeholder.com/150'" alt="Actor Poster" class="card-img-top  rounded">
               <div class="card-movie-body position-absolute bottom-0 start-0 w-100 text-black p-2">
                 <h5 class="card-title">
-                  {{ movie.name }}<br>
+                  {{ actor.name }}<br>
                 </h5>
               </div>
             </div>
           </div>
         </div>
-    </div>
-
+      </div>
     </div> 
 
     <!-- Search Details -->
@@ -234,11 +181,11 @@
               class="col-4 slider-item text-center m-3 popular-item" 
               v-for="(movie, index) in searchResults" 
               :key="index"
-              @mouseover="hoveredMovie = index"
-              @mouseleave="hoveredMovie = null"
+              @mouseover="hovered = index"
+              @mouseleave="hovered = null"
               @click="showMovieDetails(movie.id)">
               <div class="card h-100 justify-content-center">
-                <img :src="movie.image || 'https://via.placeholder.com/150'" alt="Movie Poster" class="card-img-top  rounded">
+                <img :src="movie.image ||'https://via.placeholder.com/150'" alt="Movie Poster" class="card-img-top  rounded">
                 <div class="card-movie-body position-absolute bottom-0 start-0 w-100 text-black p-2">
                   <h5 class="card-title">
                     {{ movie.fullTitle }}<br>

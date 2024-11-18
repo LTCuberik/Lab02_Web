@@ -12,7 +12,7 @@ export const dbProvider = {
                 case 'get':
                     return this.getAPIfilter(data, pattern, clss);
                 case 'search':
-                    return this.searchAPIfilter(data, pattern);
+                    return this.searchAPIfilter(data, pattern, clss);
                 case 'detail':
                     return this.detailAPIfilter(data, pattern);
                 default:
@@ -61,14 +61,21 @@ export const dbProvider = {
         };
     },
 
-    async searchAPIfilter(data, pattern) {
+    async searchAPIfilter(data, pattern, clss) {
         const [searchQuery, param] = pattern.split('?');
         const params = new URLSearchParams(param);
         const perPage = parseInt(params.get('per_page') || 10);
         const page = parseInt(params.get('page') || 1);
-        const filteredItems = data.filter(item =>
-            item.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        let filteredItems = [];
+        if (clss == 'Movies'){
+            filteredItems = data.filter(item =>
+                item.title.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        } else {
+            filteredItems = data.filter(item =>
+                item.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
 
         const startIndex = perPage * (page - 1);
         const endIndex = perPage * page;

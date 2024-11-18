@@ -1,39 +1,101 @@
-import { createApp } from 'vue';  // Import Vue
-import { comNav, comRevenueMovie } from './layouts.js';  // Import component comNav
 import { dbProvider } from './DBprovider.js';
+
+// Component chung được định nghĩa trong app.js
+const MovieSlider = {
+    props: {
+      title: String, // Tên của slider (Most Popular, Top Rated, ...)
+      sliderId: String, // ID duy nhất của slider
+      movies: Array, // Danh sách phim
+    },
+    data() {
+      return {
+        hoveredMovie: null, // Phim đang hover
+      };
+    },
+    template: `
+      <div class="movie-slider-section">
+        <h3>{{ title }}</h3>
+        <div class="position-relative">
+          <!-- Movie Slider Container -->
+          <div :id="sliderId" class="row m-5 justify-content-center">
+            <div
+              class="col-4 slider-item text-center"
+              v-for="(movie, index) in movies"
+              :key="index"
+              @mouseover="hoveredMovie = index"
+              @mouseleave="hoveredMovie = null"
+              @click="$emit('movieselected', movie.id)">
+              <div class="card h-100 justify-content-center">
+                <img
+                  :src="movie.image"
+                  alt="Movie Poster"
+                  class="rounded img-fluid"
+                  style="object-fit: cover; height: 444px; ">
+                <!-- Movie Info on Hover -->
+                <div class="card-movie-body" v-if="hoveredMovie === index">
+                  <h5 class="card-title">{{ movie.fullTitle }}</h5>
+                  <p>
+                    <strong>ImDb:</strong> {{ movie.imDbRating }} - 
+                    <strong>Count:</strong> {{ movie.imDbRatingCount }}
+                  </p>
+                  <p>
+                    <strong>Rank:</strong> {{ movie.rank }} - 
+                    <strong>Crew:</strong> {{ movie.crew }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Navigation Buttons -->
+          <button
+            class="btn position-absolute top-50 start-0 translate-middle-y"
+            @click="$emit('prevslide')">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+  
+          <button
+            class="btn position-absolute top-50 end-0 translate-middle-y"
+            @click="$emit('nextslide')">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    `,
+};
 
 const app = Vue.createApp({
     data() {
         return {
-            isDarkMode: localStorage.getItem('theme') === 'dark' || !localStorage.getItem('theme'), // Default to dark mode
-            currentRevenueMoviePage: 1, // Slide hiện tại
-            perRevenueMoviePage: 1, // Số lượng phim trên mỗi slide
-            hoveredMovie: null, // Phim đang được hover
+            isDarkMode: localStorage.getItem('theme') === 'ligth' || !localStorage.getItem('theme'), 
+            currentRevenueMoviePage: 1, 
+            perRevenueMoviePage: 1, 
+            hovered: null, 
             revenueMovies: [],
             //
-            currentPopularMoviePage: 1, // Slide hiện tại cho Most Popular
-            perPopularMoviePage: 3, // Số lượng phim trên mỗi slide cho Most Popular
-            hoveredPopularMovie: null, // Phim đang được hover cho Most Popular
-            popularMovies: [], // Dữ liệu phim Most Popular
+            currentPopularMoviePage: 1, 
+            perPopularMoviePage: 3, 
+            popularMovies: [], 
             //
-            currentTopRatedMoviePage: 1, // Slide hiện tại cho Top Rated
-            perTopRatedMoviePage: 3, // Số lượng phim trên mỗi slide cho Top Rated
-            hoveredTopRatedMovie: null, // Phim đang được hover cho Top Rated
-            topRatedMovies: [], // Dữ liệu phim Top Rated
+            currentTopRatedMoviePage: 1, 
+            perTopRatedMoviePage: 3, 
+            topRatedMovies: [], 
             //
-            selectedMovie: null, // Movie đang được chọn
+            selectedMovie: null, 
             selectedActor: null,
             //
-            searchText: '', // Từ khóa tìm kiếm
-            searchResults: [], // Kết quả tìm kiếm
-            currentSearchPage: 1, // Trang hiện tại của tìm kiếm
-            perSearchPage: 9, // Số lượng phim mỗi trang
-            totalSearchPages: 0, // Tổng số trang tìm kiếm
-            isSearchPage: false, // Xác định trạng thái đang ở trang tìm kiếm
+            searchText: '', 
+            searchResults: [], 
+            currentSearchPage: 1, 
+            perSearchPage: 9, 
+            totalSearchPages: 0, 
+            isSearchPage: false, 
             //
-            currentMovieActorPage: 1, // Trang hiện tại của tìm kiếm
-            perMovieActorPage: 9, // Số lượng phim mỗi trang
-            totalMovieActorPages: 0, // Tổng số trang tìm kiếm
+            currentMovieActorPage: 1, 
+            perMovieActorPage: 9, 
+            totalMovieActorPages: 0,
+            //
+            isLoading: false,
         };
     },
     computed: {},
@@ -54,20 +116,25 @@ const app = Vue.createApp({
             document.body.classList.toggle('light-mode', !this.isDarkMode);
         },
 
+        //show movies details
         async showMovieDetails(id) {
             const data = await dbProvider.fetchData(`detail/movie/${id}`);
             console.log(data);
             this.selectedMovie = data;
         },
 
-        async showActorDetails(actorId) {
-            const data = await dbProvider.fetchData(`detail/movie/${id}`);
-            
+        async showActorDetails(data) {
+            this.selectedActor = data;
         },
 
-        backToHome() {
-            this.selectedMovie = null;
-            this.isSearchPage = false; 
+        async backToHome() {
+            this.isLoading = true; 
+            
+            setTimeout(() => {
+                this.selectedMovie = null;
+                this.isSearchPage = false; 
+                this.isLoading = false; 
+            }, 1000);
         },
 
         convertListToString(list, property) {
@@ -134,17 +201,17 @@ const app = Vue.createApp({
             }
         },
 
-        async prevTopRatedMoviesSlide() {
+        prevTopRatedMoviesSlide() {
             if (this.currentTopRatedMoviePage > 1) {
                 this.currentTopRatedMoviePage--;
-                await this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
+                this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
             }
         },
 
-        async nextTopRatedMoviesSlide() {
+        nextTopRatedMoviesSlide() {
             if (this.currentTopRatedMoviePage < this.totalSlides) {
                 this.currentTopRatedMoviePage++;
-                await this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
+                this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
             }
         },
 
@@ -182,15 +249,16 @@ const app = Vue.createApp({
     
     },
 
-    components: {
-        comRevenueMovie 
-    },
-
     created() {
+        this.isLoading = true;
         this.fetchRevenueMovies(this.currentRevenueMoviePage);
         this.fetchPopularMovies(this.currentPopularMoviePage);
         this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
+        setTimeout(() => {
+            this.isLoading = false;
+        }, 1000); 
     },
 });
 
+app.component('movieslider', MovieSlider);
 app.mount('#app');
