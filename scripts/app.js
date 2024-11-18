@@ -22,6 +22,13 @@ const app = Vue.createApp({
             topRatedMovies: [], // Dữ liệu phim Top Rated
             //
             selectedMovie: null, // Movie đang được chọn
+            //
+            searchText: '', // Từ khóa tìm kiếm
+            searchResults: [], // Kết quả tìm kiếm
+            currentSearchPage: 1, // Trang hiện tại của tìm kiếm
+            perSearchPage: 9, // Số lượng phim mỗi trang
+            totalSearchPages: 0, // Tổng số trang tìm kiếm
+            isSearchPage: false, // Xác định trạng thái đang ở trang tìm kiếm
         };
     },
     computed: {},
@@ -52,9 +59,10 @@ const app = Vue.createApp({
         showMovieDetails(movie) {
             this.selectedMovie = movie;
         },
-        
+
         backToHome() {
             this.selectedMovie = null;
+            this.isSearchPage = false; 
         },
 
         async fetchRevenueMovies(page) {
@@ -67,11 +75,11 @@ const app = Vue.createApp({
                     revenue: movie.boxOffice.cumulativeWorldwideGross,
                     imdb: movie.ratings.imDb,
                     image: movie.image,
-                    producer: movie.producer || 'Unknown',  // Assuming the field exists in the API
-                    director: movie.director || 'Unknown',  // Assuming the field exists in the API
-                    actors: movie.actors || 'Unknown',      // Assuming the field exists in the API
+                    producer: movie.producer || 'Unknown',
+                    director: movie.director || 'Unknown',
+                    actors: movie.actors || 'Unknown',
                 }));
-                this.totalSlides = 5;
+                this.totalSlides = 5; // Update this based on the total number of pages
             } catch (error) {
                 console.error('Error fetching movies:', error);
             }
@@ -83,6 +91,7 @@ const app = Vue.createApp({
                 await this.fetchRevenueMovies(this.currentRevenueMoviePage);
             }
         },
+        
         async nextRevMoviesSlide() {
             if (this.currentRevenueMoviePage < this.totalSlides) {
                 this.currentRevenueMoviePage++;
@@ -99,14 +108,13 @@ const app = Vue.createApp({
                     releaseYear: movie.year,
                     image: movie.image,
                     genre: movie.genre || 'Unknown',  
-                    director: movie.director || 'Unknown',  // Assuming the field exists in the API
+                    director: movie.director || 'Unknown',  
                 }));
             } catch (error) {
                 console.error('Error fetching popular movies:', error);
             }
         },
 
-        // Previous Slide for Most Popular
         async prevPopularMoviesSlide() {
             if (this.currentPopularMoviePage > 1) {
                 this.currentPopularMoviePage--;
@@ -114,7 +122,6 @@ const app = Vue.createApp({
             }
         },
 
-        // Next Slide for Most Popular
         async nextPopularMoviesSlide() {
             if (this.currentPopularMoviePage < this.totalSlides) {
                 this.currentPopularMoviePage++;
@@ -134,36 +141,70 @@ const app = Vue.createApp({
                     director: movie.director || 'Unknown',
                 }));
             } catch (error) {
-                console.error('Error fetching top rated movies:', error);
+                console.error('Error fetching top-rated movies:', error);
             }
         },
 
-        // Previous Slide for Top Rated
         async prevTopRatedMoviesSlide() {
-            if (this.currentTopRatedMoviePage > 0) {
+            if (this.currentTopRatedMoviePage > 1) {
                 this.currentTopRatedMoviePage--;
                 await this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
             }
         },
 
-        // Next Slide for Top Rated
         async nextTopRatedMoviesSlide() {
             if (this.currentTopRatedMoviePage < this.totalSlides) {
                 this.currentTopRatedMoviePage++;
                 await this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
             }
         },
-    },
-    components:{
-        comNav
+
+        // Handle search input and fetch search results
+        async handleSearchInput() {
+            if (!this.searchText.trim()) {
+                alert('Vui lòng nhập từ khóa tìm kiếm!');
+                return;
+            }
+            this.isSearchPage = true; // Chuyển sang trạng thái trang tìm kiếm
+            this.selectedMovie = null;
+            this.currentSearchPage = 1; // Bắt đầu từ trang 1
+            await this.fetchSearchResults(this.searchText, this.currentSearchPage);
+        },
+    
+        async fetchSearchResults(keyword, page) {
+            try {
+                const data = await dbProvider.fetchData(`search/movie/${keyword}?per_page=${this.perSearchPage}&page=${page}`);
+                console.log(data);
+                this.searchResults = data.items.map(movie => ({
+                    title: movie.title,
+                    releaseYear: movie.year,
+                    revenue: movie.boxOffice?.cumulativeWorldwideGross || 'N/A',
+                    imdb: movie.ratings?.imDb || 'N/A',
+                    image: movie.image || 'https://via.placeholder.com/150',
+                    producer: movie.producer || 'Unknown',
+                    director: movie.director || 'Unknown',
+                    actors: movie.actors || 'Unknown',
+                }));
+                this.totalSearchPages = data.total_pages; // Cập nhật tổng số trang từ API
+            } catch (error) {
+                console.error('Error fetching search results:', error);
+                this.searchResults = [];
+            }
+        },
+    
+        changeSearchPage(page) {
+            if (page >= 1 && page <= this.totalSearchPages) {
+                this.currentSearchPage = page;
+                this.fetchSearchResults(this.searchText, page);
+            }
+        },
+    
     },
 
-
-    async mounted() {
-        this.applyTheme();
-        await this.fetchRevenueMovies(this.currentRevenueMoviePage);
-        await this.fetchPopularMovies(this.currentPopularMoviePage);
-        await this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
+    created() {
+        this.fetchRevenueMovies(this.currentRevenueMoviePage);
+        this.fetchPopularMovies(this.currentPopularMoviePage);
+        this.fetchTopRatedMovies(this.currentTopRatedMoviePage);
     },
 });
 

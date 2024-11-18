@@ -105,6 +105,23 @@ nav span:hover{
     transform: scale(1.2); 
 }
 
+/*Card view search*/
+.search-results {
+    margin-top: 20px;
+}
+
+.pagination-container {
+    margin-top: 20px;
+}
+
+.page-item.active .page-link {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+
+
 /*Footer*/
 .footer{
     background-color: rgba(165, 42, 42, 0.367);

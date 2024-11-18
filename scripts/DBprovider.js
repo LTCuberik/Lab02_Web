@@ -72,8 +72,9 @@ export const dbProvider = {
 
         const startIndex = perPage * (page - 1);
         const endIndex = perPage * page;
+        console.log(searchQuery);
         const paginatedItems = filteredItems.slice(startIndex, endIndex);
-        console.log(paginatedItems );
+        console.log(paginatedItems);
         return {
             search: searchQuery,
             perPage,
