@@ -1,5 +1,5 @@
 import { createApp } from 'vue';  // Import Vue
-import { comNav } from './layouts.js';  // Import component comNav
+import { comNav, comRevenueMovie } from './layouts.js';  // Import component comNav
 import { dbProvider } from './DBprovider.js';
 
 const app = Vue.createApp({
@@ -22,6 +22,7 @@ const app = Vue.createApp({
             topRatedMovies: [], // Dữ liệu phim Top Rated
             //
             selectedMovie: null, // Movie đang được chọn
+            selectedActor: null,
             //
             searchText: '', // Từ khóa tìm kiếm
             searchResults: [], // Kết quả tìm kiếm
@@ -29,6 +30,10 @@ const app = Vue.createApp({
             perSearchPage: 9, // Số lượng phim mỗi trang
             totalSearchPages: 0, // Tổng số trang tìm kiếm
             isSearchPage: false, // Xác định trạng thái đang ở trang tìm kiếm
+            //
+            currentMovieActorPage: 1, // Trang hiện tại của tìm kiếm
+            perMovieActorPage: 9, // Số lượng phim mỗi trang
+            totalMovieActorPages: 0, // Tổng số trang tìm kiếm
         };
     },
     computed: {},
@@ -49,15 +54,15 @@ const app = Vue.createApp({
             document.body.classList.toggle('light-mode', !this.isDarkMode);
         },
 
-        calculateRevenue(boxOffice) {
-            const parseAmount = (amount) => parseInt(amount.replace(/[\$,]/g, "")) || 0; // Loại bỏ ký tự $ và , để chuyển thành số
-            const gross = parseAmount(boxOffice.cumulativeWorldwideGross);
-            if (!gross) return 0;
-            return gross;
+        async showMovieDetails(id) {
+            const data = await dbProvider.fetchData(`detail/movie/${id}`);
+            console.log(data);
+            this.selectedMovie = data;
         },
 
-        showMovieDetails(movie) {
-            this.selectedMovie = movie;
+        async showActorDetails(actorId) {
+            const data = await dbProvider.fetchData(`detail/movie/${id}`);
+            
         },
 
         backToHome() {
@@ -65,21 +70,17 @@ const app = Vue.createApp({
             this.isSearchPage = false; 
         },
 
+        convertListToString(list, property) {
+            return list.map(item => item[property]).join(", ");
+        },
+
+        // Fetch Most Top Revenue Movies
         async fetchRevenueMovies(page) {
             try {
                 const data = await dbProvider.fetchData(`get/movie/?per_page=${this.perRevenueMoviePage}&page=${page}`);
-                
-                this.revenueMovies = data.items.map(movie => ({
-                    title: movie.title,
-                    releaseYear: movie.year,
-                    revenue: movie.boxOffice.cumulativeWorldwideGross,
-                    imdb: movie.ratings.imDb,
-                    image: movie.image,
-                    producer: movie.producer || 'Unknown',
-                    director: movie.director || 'Unknown',
-                    actors: movie.actors || 'Unknown',
-                }));
-                this.totalSlides = 5; // Update this based on the total number of pages
+                this.revenueMovies = data.items;
+                console.log( this.revenueMovies[0])
+                this.totalSlides = 5;
             } catch (error) {
                 console.error('Error fetching movies:', error);
             }
@@ -103,13 +104,7 @@ const app = Vue.createApp({
         async fetchPopularMovies(page) {        
             try {            
                 const data = await dbProvider.fetchData(`get/mostpopular/?per_page=${this.perPopularMoviePage}&page=${page}`);
-                this.popularMovies = data.items.map(movie => ({
-                    title: movie.title,
-                    releaseYear: movie.year,
-                    image: movie.image,
-                    genre: movie.genre || 'Unknown',  
-                    director: movie.director || 'Unknown',  
-                }));
+                this.popularMovies = data.items;
             } catch (error) {
                 console.error('Error fetching popular movies:', error);
             }
@@ -133,13 +128,7 @@ const app = Vue.createApp({
         async fetchTopRatedMovies(page) {
             try {
                 const data = await dbProvider.fetchData(`get/top50/?per_page=${this.perTopRatedMoviePage}&page=${page}`);
-                this.topRatedMovies = data.items.map(movie => ({
-                    title: movie.title,
-                    releaseYear: movie.year,
-                    image: movie.image,
-                    genre: movie.genre || 'Unknown',
-                    director: movie.director || 'Unknown',
-                }));
+                this.topRatedMovies = data.items;
             } catch (error) {
                 console.error('Error fetching top-rated movies:', error);
             }
@@ -175,17 +164,9 @@ const app = Vue.createApp({
             try {
                 const data = await dbProvider.fetchData(`search/movie/${keyword}?per_page=${this.perSearchPage}&page=${page}`);
                 console.log(data);
-                this.searchResults = data.items.map(movie => ({
-                    title: movie.title,
-                    releaseYear: movie.year,
-                    revenue: movie.boxOffice?.cumulativeWorldwideGross || 'N/A',
-                    imdb: movie.ratings?.imDb || 'N/A',
-                    image: movie.image || 'https://via.placeholder.com/150',
-                    producer: movie.producer || 'Unknown',
-                    director: movie.director || 'Unknown',
-                    actors: movie.actors || 'Unknown',
-                }));
-                this.totalSearchPages = data.total_pages; // Cập nhật tổng số trang từ API
+                this.searchResults = data.items;
+                this.totalSearchPages = data.totalPages; // Cập nhật tổng số trang từ API
+                console.log(this.totalSearchPages);
             } catch (error) {
                 console.error('Error fetching search results:', error);
                 this.searchResults = [];
@@ -199,6 +180,10 @@ const app = Vue.createApp({
             }
         },
     
+    },
+
+    components: {
+        comRevenueMovie 
     },
 
     created() {
